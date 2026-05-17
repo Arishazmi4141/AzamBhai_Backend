@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+
+import e_commerce.khilat.controller.ProductController;
 
 //import com.stripe.exception.StripeException;
 //import com.stripe.model.PaymentIntent;
@@ -32,6 +36,9 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class CheckoutService {
+	
+	private static final Logger LOGGER =
+            LoggerFactory.getLogger(CheckoutService.class);
 	
 	@Value("${razorpay.key.id}")
     private String keyId;
@@ -78,7 +85,8 @@ public class CheckoutService {
     @Transactional
     public CheckoutResponse createPaymentIntent(OrderRequest request) throws Exception {
     	
-    	
+    	System.out.println("Create payment service tart");
+
 
         // 1️⃣ Fetch cart
         Cart cart = cartRepo.findByGuestId(request.getGuestId())
@@ -107,13 +115,21 @@ public class CheckoutService {
         String currency = request.getCurrency();
         String guestId = (request.getGuestId() != null) ? request.getGuestId().toString() : "anonymous";
         
-
-        // 4️⃣ Create Stripe PaymentIntent
-//        PaymentIntent paymentIntent = stripePaymentService.createPaymentIntent(
-//        	    amount, 
-//        	    currency, 
-//        	    guestId
-//        	);
+        LOGGER.debug("""
+        	    === RAZORPAY DEBUG ===
+        	    Key ID      : [{}]
+        	    Key Secret  : [{}]
+        	    Amount      : {}
+        	    Currency    : {}
+        	    Guest ID    : {}
+        	    ======================\
+        	    """, 
+        	    keyId, 
+        	    (keySecret != null ? keySecret.substring(0, 4) + "****" : "NULL"), 
+        	    amountInPaise, 
+        	    currency, 
+        	    guestId
+        	);
         
         com.razorpay.Order razorpayOrder = razorpayPaymentService.createRazorpayOrder(
                 amountInPaise, 
@@ -145,7 +161,7 @@ public class CheckoutService {
         Payment payment = new Payment();
         payment.setGateway("RAZORPAY");
         payment.setTransactionId(razorpayOrder.get("id")); 
-        payment.setStatus("CREATED");
+        payment.setStatus(CommonConstant.CREATED);
         payment.setAmount(totalAmount);
         payment.setCreatedAt(LocalDateTime.now());
         
@@ -156,38 +172,7 @@ public class CheckoutService {
         savedOrder.setPayment(savedPayment);
         
         orderRepo.save(savedOrder);
-
-        // 5️⃣ Save Payment record (CREATED)
-//        Payment payment = new Payment();
-//        payment.setGateway("RAZORPAY");
-//        String rzpId = razorpayOrder.get("id"); 
-//        payment.setTransactionId(rzpId);
-//        payment.setTransactionId(razorpayOrder.getId());
-//        payment.setTransactionId(razorpayOrder.get("id"));
-//        payment.setStatus("CREATED");
-//        payment.setAmount(totalAmount);
-//        payment.setCreatedAt(LocalDateTime.now());
-
-//        Payment savedPayment = paymentRepo.save(payment);    
         
-//        Order order = new Order();
-//        order.setGuestId(request.getGuestId());
-//        order.setAddress(request.getAddress()); 
-//        order.setEmail(request.getEmail());
-//        order.setName(request.getName());
-//        order.setPhone(request.getPhone());
-//        order.setTrackingKey(Utility.generateTrackingKey());
-        
-        
-        
-        
-       
-        // 6️⃣ Response
-//        CheckoutResponse response = new CheckoutResponse();
-//        response.setClientSecret(paymentIntent.getClientSecret());
-//        response.setAmount(amountInPaise);
-//
-//        return response;
         CheckoutResponse response = new CheckoutResponse();
         response.setRazorpayOrderId(razorpayOrder.get("id").toString());
         response.setAmount(amountInPaise);

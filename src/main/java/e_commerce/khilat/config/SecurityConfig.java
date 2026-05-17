@@ -39,8 +39,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 2. Explicitly permit OPTIONS requests for all paths
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() 
-                .requestMatchers("/api/admin/login","/api/admin/signup").permitAll()
+                .requestMatchers("/api/admin/login","/api/admin/signup","/api/order/create-guestorder").permitAll()
                 .requestMatchers("/api/stripe/webhook").permitAll()
+                .requestMatchers("/api/razorpay/webhook").permitAll()
                 .requestMatchers("/api/admin/**").authenticated()
                 .anyRequest().permitAll()
             )
