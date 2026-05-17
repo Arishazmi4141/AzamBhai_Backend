@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
+//import com.stripe.exception.StripeException;
+//import com.stripe.model.PaymentIntent;
 
 import e_commerce.khilat.dtomodels.CheckoutRequest;
 import e_commerce.khilat.dtomodels.CheckoutResponse;
@@ -47,7 +47,7 @@ public class CheckoutService {
     
     private final PaymentRepo paymentRepo;
     
-    private final StripePaymentService stripePaymentService;
+//    private final StripePaymentService stripePaymentService;
     
     private final OrderRepo orderRepo;
     
@@ -61,13 +61,12 @@ public class CheckoutService {
             CartItemRepo cartItemRepo,
             PaymentRepo paymentRepo,
             OrderRepo orderRepo,
-            OrderItemRepo orderItemRepo,
-        StripePaymentService stripePaymentService) {
+            OrderItemRepo orderItemRepo) {
 
         this.cartRepo = cartRepo;
         this.cartItemRepo = cartItemRepo;
         this.paymentRepo = paymentRepo;
-        this.stripePaymentService = stripePaymentService;
+//        this.stripePaymentService = stripePaymentService;
         this.orderRepo =  orderRepo;
         this.orderItemRepo = orderItemRepo;
         

@@ -47,3 +47,6 @@ application-dev.properties
 # ========================
 tmp/
 *.swp
+
+.metadata/
+logs/api.log.*

@@ -39,6 +39,12 @@ public class CartController {
 	
     @Autowired 
     private CartItemRepo cartItemRepository;
+    
+    
+    @GetMapping("/hello")
+    public String helloWorld() {
+    	return "Hello World!";
+    }
 
 
 	
