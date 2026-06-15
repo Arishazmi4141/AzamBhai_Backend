@@ -34,7 +34,7 @@ public class ProductImageService {
     private ProductRepo productRepo;
     
     @Autowired
-    private ImgBBService imgBbservice;
+    private CloudflareR2Service cloudflareR2Service;
 
     public List<ProductImage> getImagesByProduct(Long productId) {
         return productImageRepo.findByProduct_Id(productId);
@@ -56,7 +56,7 @@ public class ProductImageService {
             LOGGER.debug("product with id: {} rcvd" , product.toString());
 
             // 2️⃣ Upload image to ImgBB
-            String imageUrl = imgBbservice.uploadImage(file); // Returns the public URL
+            String imageUrl = cloudflareR2Service.uploadImage(file); // Returns the public URL
 
             // 3️⃣ Save ProductImage
             ProductImage image = new ProductImage();
