@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import e_commerce.khilat.dtomodels.SignupRequest;
 import e_commerce.khilat.entity.User;
 import e_commerce.khilat.repository.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,19 +36,23 @@ public class UserService {
     }
 	
 	// SIGNUP
-    public User register(User user) {
+	public User register(SignupRequest request) {
 
-        Optional<User> existingUser = userRepo.findByEmail(user.getEmail());
+	    Optional<User> existingUser = userRepo.findByEmail(request.getEmail());
 
-        if (existingUser.isPresent()) {
-            throw new RuntimeException("Email already registered");
-        }
+	    if (existingUser.isPresent()) {
+	        throw new RuntimeException("Email already registered");
+	    }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
+	    User user = new User();
+	    user.setName(request.getName());
+	    user.setEmail(request.getEmail());
+	    user.setPhone(request.getPhone());
+	    user.setPassword(passwordEncoder.encode(request.getPassword()));
+	    user.setCreatedAt(LocalDateTime.now());
 
-        return userRepo.save(user);
-    }
+	    return userRepo.save(user);
+	}
     
     
 
