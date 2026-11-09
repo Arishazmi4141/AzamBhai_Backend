@@ -10,12 +10,13 @@ import e_commerce.khilat.entity.WorkStatus;
 public class CustomerJobResponse {
 
     private String id;
-    private String title;              // ✅ pehle missing tha, add kar diya (frontend ko chahiye)
+    private String title;
     private String description;
     private BigDecimal amount;
     private WorkStatus workStatus;
     private PaymentStatus paymentStatus;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;   // NEW: done date receipt ke liye
 
     public static CustomerJobResponse build(Job job) {
 
@@ -28,15 +29,17 @@ public class CustomerJobResponse {
         res.workStatus = job.getWorkStatus();
         res.paymentStatus = job.getPaymentStatus();
         res.createdAt = job.getCreatedAt();
+        res.updatedAt = job.getUpdatedAt();
 
         return res;
     }
 
-    public String getId() { return id; }   // ✅ Long se String
+    public String getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public BigDecimal getAmount() { return amount; }
     public WorkStatus getWorkStatus() { return workStatus; }
     public PaymentStatus getPaymentStatus() { return paymentStatus; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

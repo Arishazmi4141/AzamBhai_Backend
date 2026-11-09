@@ -18,24 +18,37 @@ public class DashboardService {
     @Autowired
     private JobService jobService;
 
+    @Autowired
+    private ExpenseService expenseService;
+
     public DashboardResponse getDashboard() {
         BigDecimal totalDR = jobService.sumByPaymentStatus(PaymentStatus.DR);
         BigDecimal totalCR = jobService.sumByPaymentStatus(PaymentStatus.CR);
 
         LocalDate today = LocalDate.now();
 
-        LocalDateTime startOfMonth = today.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime startOfWeek = today.with(ChronoField.DAY_OF_WEEK, 1).atStartOfDay();
-        LocalDateTime startOfYear = today.withDayOfYear(1).atStartOfDay();
+        LocalDate monthStart = today.withDayOfMonth(1);
+        LocalDate weekStart = today.with(ChronoField.DAY_OF_WEEK, 1);
+        LocalDate yearStart = today.withDayOfYear(1);
         LocalDateTime endOfDay = today.atTime(23, 59, 59);
 
-        BigDecimal monthlyRevenue = jobService.sumByPaymentStatusAndRange(PaymentStatus.CR, startOfMonth, endOfDay);
-        BigDecimal weeklyRevenue = jobService.sumByPaymentStatusAndRange(PaymentStatus.CR, startOfWeek, endOfDay);
-        BigDecimal yearlyRevenue = jobService.sumByPaymentStatusAndRange(PaymentStatus.CR, startOfYear, endOfDay);
+        // Revenue (CR jobs)
+        BigDecimal monthlyRevenue = jobService.sumByPaymentStatusAndRange(PaymentStatus.CR, monthStart.atStartOfDay(), endOfDay);
+        BigDecimal weeklyRevenue = jobService.sumByPaymentStatusAndRange(PaymentStatus.CR, weekStart.atStartOfDay(), endOfDay);
+        BigDecimal yearlyRevenue = jobService.sumByPaymentStatusAndRange(PaymentStatus.CR, yearStart.atStartOfDay(), endOfDay);
+
+        // Expenses
+        BigDecimal totalExpenses = expenseService.totalExpense();
+        BigDecimal weeklyExpenses = expenseService.totalExpenseBetween(weekStart, today);
+        BigDecimal monthlyExpenses = expenseService.totalExpenseBetween(monthStart, today);
+        BigDecimal yearlyExpenses = expenseService.totalExpenseBetween(yearStart, today);
 
         long pending = jobService.countByWorkStatus(WorkStatus.PENDING);
         long done = jobService.countByWorkStatus(WorkStatus.DONE);
 
-        return new DashboardResponse(totalDR, totalCR, monthlyRevenue, weeklyRevenue, yearlyRevenue, pending, done);
+        return new DashboardResponse(totalDR, totalCR,
+                monthlyRevenue, weeklyRevenue, yearlyRevenue,
+                totalExpenses, weeklyExpenses, monthlyExpenses, yearlyExpenses,
+                pending, done);
     }
 }

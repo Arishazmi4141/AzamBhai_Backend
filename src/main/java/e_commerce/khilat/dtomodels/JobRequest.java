@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class JobRequest {
 
-    private String customerId;   // ✅ Long se String
+    private String customerId;   
     private String title;
     private String description;
     private BigDecimal amount;
